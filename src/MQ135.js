@@ -33,8 +33,6 @@ class MQ135 {
     getPPM(resistance) {
         return PAR_A * Math.pow((resistance/this.rZero_), PAR_B);
     }
-
-
 }
 
 export default MQ135;

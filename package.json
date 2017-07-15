@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "colors": "^1.1.2",
+    "csv": "^1.1.1",
+    "glob": "^7.1.2",
+    "minimist": "^1.2.0",
     "node-nmea": "^1.0.3",
     "serialport": "^4.0.7"
   }
