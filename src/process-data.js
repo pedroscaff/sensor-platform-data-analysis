@@ -32,7 +32,7 @@ files.forEach(file => {
             apply: val => mq2.getPPM(mq2.getResistance(val)).toFixed(2)
         },
         {
-            column: 1,
+            column: 'mq135',
             apply: val => mq135.getPPM(mq135.getResistance(val)).toFixed(2)
         }
     ]);

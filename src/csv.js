@@ -31,7 +31,8 @@ module.exports = {
                     value = Number.parseInt(value);
                 }
                 transforms.forEach(transform => {
-                    if (transform.column === index) {
+                    if (transform.column === index ||
+                        transform.column === columns[index]) {
                         value = transform.apply(value);
                     }
                 });
