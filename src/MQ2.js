@@ -1,23 +1,11 @@
 'use strict';
 
-// Parameters for calculating ppm of CO2 from sensor resistance
+// Parameters for calculating ppm of CO from sensor resistance
 // y = a * x ^ b
-const PAR_A = 116.6020682;
-const PAR_B = -2.769034857;
+const PAR_A = 3.0641 * 10^4;
+const PAR_B = -2.9656;
 
-// Parameters to model temperature and humidity dependence
-const CORA = 0.00035;
-const CORB = 0.02718;
-const CORC = 1.39538;
-const CORD = 0.0018;
-const CORE = -0.003333333;
-const CORF = -0.001923077;
-const CORG = 1.130128205;
-
-// Atmospheric CO2 level for calibration purposes
-const ATMOCO2 = 409.65;
-
-class MQ135 {
+class MQ2 {
     /**
      * @constructor
      * @param rLoad - The load resistance on the board
@@ -54,4 +42,4 @@ class MQ135 {
     }
 }
 
-module.exports = MQ135;
+module.exports = MQ2;

@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    csvToObjArray: function(input, columns) {
+    csvToObjArray: function(input, columns, transforms = []) {
         const fs = require('fs');
         const colors = require('colors');
         let contents = fs.readFileSync(input, 'utf-8').split('\n');
@@ -12,14 +12,15 @@ module.exports = {
         for (let i = 0; i < contents.length; i++) {
             // sometimes the last entry has a line break (\n)
             // causing the content to be empty
-            // that is not a invalid entry case
+            // that is not an invalid entry case
             if (contents[i] === '') {
                 continue;
             }
             let line = contents[i].split(',');
             // do not process invalid entry
             if (line.length !== columns.length) {
-                console.log(colors.red(`invalid entry found:\n${contents[i]}`));
+                console.log(
+                    colors.red(`invalid entry skipped:\n${contents[i]}`));
                 continue;
             }
             let entry = {};
@@ -29,6 +30,11 @@ module.exports = {
                 } else {
                     value = Number.parseInt(value);
                 }
+                transforms.forEach(transform => {
+                    if (transform.column === index) {
+                        value = transform.apply(value);
+                    }
+                });
                 entry[columns[index]] = value;
             });
             objArray.entries.push(entry);
@@ -38,7 +44,7 @@ module.exports = {
     saveCsv: function(output, objArray) {
         const fs = require('fs');
         let csv = `${objArray.columns.toString()}\n`;
-        function serialize(entry) {
+        function entryToLine(entry) {
             let line = '';
             objArray.columns.forEach((column, index) => {
                 if (index === objArray.columns.length - 1) {
@@ -50,7 +56,7 @@ module.exports = {
             return line;
         }
         objArray.entries.forEach(entry => {
-            csv += serialize(entry);
+            csv += entryToLine(entry);
         });
         fs.writeFileSync(output, csv, 'utf-8');
     }
