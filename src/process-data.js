@@ -19,11 +19,11 @@ let allCsvs = {
 
 const MQ135 = require('./MQ135.js');
 let mq135 = new MQ135(10.0);
-mq135.setRZero(mq135.getResistance(80));
+mq135.setRZero(mq135.getResistance(argv.mq135));
 
 const MQ2 = require('./MQ2.js');
 let mq2 = new MQ2(10.0);
-mq2.setRZero(mq2.getResistance(80));
+mq2.setRZero(mq2.getResistance(argv.mq2));
 
 files.forEach(file => {
     let obj = csv.csvToObjArray(file, columns, [
