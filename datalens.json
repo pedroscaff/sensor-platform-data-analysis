@@ -1,0 +1,12 @@
+{
+    "app_id": "in2pu7pura4wetagevAb",
+    "app_code": "py5JthxGeTnFXDNPQEIiRA",
+    "host": "cit.datalens.api.here.com",
+    "queries": {
+        "query": {
+            "fileName": "./query.json",
+            "dataset": "3ac1014020f747739532b031a35db536",
+            "id": "361e06e9eac7496f89a6d96b106d368c"
+        }
+    }
+}

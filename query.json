@@ -1,0 +1,156 @@
+{
+    "query": {
+        "metrics": [
+            "co2_ppm",
+            "lat_avg",
+            "lon_avg",
+            "count"
+        ],
+        "facets": [
+            "tx",
+            "ty"
+        ],
+        "namespace": {
+            "tx": {
+                "source": [
+                    "px"
+                ],
+                "apply": [
+                    {
+                        "type": "transform",
+                        "params": [
+                            256
+                        ],
+                        "fn": "mod"
+                    }
+                ]
+            },
+            "ty": {
+                "source": [
+                    "py"
+                ],
+                "apply": [
+                    {
+                        "type": "transform",
+                        "params": [
+                            256
+                        ],
+                        "fn": "mod"
+                    }
+                ]
+            },
+            "buffer": {
+                "source": [
+                    {
+                        "default": 0,
+                        "$input": "buffer"
+                    }
+                ]
+            },
+            "px": {
+                "source": [
+                    "lon",
+                    "z"
+                ],
+                "apply": [
+                    {
+                        "type": "transform",
+                        "fn": "lon_to_x"
+                    }
+                ]
+            },
+            "py": {
+                "source": [
+                    "lat",
+                    "z"
+                ],
+                "apply": [
+                    {
+                        "type": "transform",
+                        "fn": "lat_to_y"
+                    }
+                ]
+            },
+            "count": {
+                "apply": [
+                    {
+                        "type": "aggregate",
+                        "fn": "count_all"
+                    }
+                ]
+            },
+            "co2_ppm": {
+                "source": [
+                    "mq135"
+                ],
+                "apply": [
+                    {
+                        "type": "aggregate",
+                        "fn": "average"
+                    }
+                ]
+            },
+            "lat_avg": {
+                "source": [
+                    "lat"
+                ],
+                "apply": [
+                    {
+                        "type": "aggregate",
+                        "fn": "average"
+                    }
+                ]
+            },
+            "lon_avg": {
+                "source": [
+                    "lon"
+                ],
+                "apply": [
+                    {
+                        "type": "aggregate",
+                        "fn": "average"
+                    }
+                ]
+            },
+            "y": {
+                "source": [
+                    {
+                        "$input": "y"
+                    }
+                ]
+            },
+            "x": {
+                "source": [
+                    {
+                        "$input": "x"
+                    }
+                ]
+            },
+            "z": {
+                "source": [
+                    {
+                        "$input": "z"
+                    }
+                ]
+            },
+            "pixels": {
+                "source": [
+                    "px",
+                    "py"
+                ]
+            }
+        },
+        "filters": [
+            {
+                "pixels": {
+                    "$pixel_within_tile": [
+                        "x",
+                        "y",
+                        "buffer"
+                    ]
+                }
+            }
+        ]
+    },
+    "description": ""
+}

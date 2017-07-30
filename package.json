@@ -1,19 +1,30 @@
 {
-  "name": "data-processing",
-  "version": "1.0.0",
+  "name": "heatmap-density-declarative",
+  "version": "1.3.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "lens start",
+    "export": "lens export"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://gerrit.it.here.com:29418/datalens/lib/lenses"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "colors": "^1.1.2",
-    "csv": "^1.1.1",
-    "glob": "^7.1.2",
-    "minimist": "^1.2.0",
-    "node-nmea": "^1.0.3",
-    "serialport": "^4.0.7"
+    "datalens-ui": "http://js.in.datalens.here.com/npm/datalens-ui-1.2.7.tgz"
+  },
+  "config": {
+    "here-demo": {
+      "uid": "heat-map-bandwidth",
+      "thumbnail": "./thumbnail.png",
+      "title": "Visualize a Heat Map with an Adjustable Bandwidth",
+      "shortDescription": "Visualize a heat map in which the smoothness can be explicitly controlled with a bandwidth slider",
+      "description": "./DESCRIPTION.md",
+      "explanatoryText": "./EXPLANATORY_TEXT.md",
+      "imagesFolder": "./images"
+    }
   }
 }
