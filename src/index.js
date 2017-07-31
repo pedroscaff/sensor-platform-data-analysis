@@ -56,11 +56,15 @@ service.fetchQueryStats(query.id, {
         columnStats.lon_avg.$max
     ), false);
 
-    const colorScale = d3.scaleLinear().range([
-        'rgba(30, 68, 165, 0.03)',
-        'rgba(87, 164, 217, 0.8)',
-        'rgba(202, 248, 191, 0.8)'
-    ]).domain([0,.5,1]);
+    const colors = [
+        'rgb(158, 1, 66)',
+        'rgb(238, 100, 69)',
+        'rgb(250, 177, 88)',
+        'rgb(243, 250, 173)',
+        'rgb(199, 250, 173)',
+        'rgb(152, 213, 163)',
+        'rgb(92, 183, 169)'
+    ];
 
     //init controls
     // const bandwidthCtl = new Slider(10);
@@ -93,15 +97,15 @@ service.fetchQueryStats(query.id, {
                     x: row.tx,
                     y: row.ty,
                     value: row.co2_ppm,
-                    count: 1
+                    count: row.count
                 };
             },
-            bandwidth: bandwidth,
-            valueRange: {
-                value: columnStats.co2_ppm.$average,
-                zoom: 4
-            },
-            colorScale
+            bandwidth,
+            aggregation: H.datalens.HeatmapLayer.Aggregation.AVERAGE,
+            // valueRange: [columnStats.co2_ppm.$min, columnStats.co2_ppm.$max],
+            valueRange: [100, 600],
+            colorScale: d3.scaleQuantize().domain([0, 1]).range(colors),
+            inputScale: H.datalens.HeatmapLayer.InputScale.LINEAR
         }
     );
 
