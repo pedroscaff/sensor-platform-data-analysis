@@ -1,6 +1,13 @@
 data acquirement observations
 ==================================
 
+### average value for each day
+
+date | mq2 | mq135
+--- | ---
+17.07 | 155.22 | 180.68
+30.07 | 61.81 | 105.24
+
 ### measurement reports
 
 #### 14.08
