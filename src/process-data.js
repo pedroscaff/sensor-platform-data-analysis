@@ -11,14 +11,17 @@ if (argv.folder && typeof argv.folder === 'string') {
     files = glob.sync(argv.pattern);
 }
 const output = argv.output || 'out.csv';
-const columns = ['mq2', 'mq135', 'temp', 'hum', 'lat', 'lon', 'alt'];
+let columns = ['mq2', 'mq135', 'temp', 'hum', 'lat', 'lon', 'alt'];
+if (argv.timestamp) {
+    columns.push('timestamp');
+}
 let allCsvs = {
     columns: columns,
     entries: []
 };
 
 const MQ135 = require('./MQ135.js');
-let mq135 = new MQ135(10.0);
+let mq135 = new MQ135(20.0);
 mq135.setRZero(mq135.getResistance(argv.mq135));
 
 const MQ2 = require('./MQ2.js');

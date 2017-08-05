@@ -8,6 +8,15 @@ date | mq2 | mq135
 17.07 | 155.22 | 180.68
 30.07 | 61.81 | 105.24
 
+### data for baseline
+
+- `mq135: 85`
+- `mq2: 61`
+
+file | command
+--- | ---
+prenzlberg.csv |
+
 ### measurement reports
 
 #### 14.08

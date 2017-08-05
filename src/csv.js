@@ -4,6 +4,7 @@ module.exports = {
     csvToObjArray: function(input, columns, transforms = []) {
         const fs = require('fs');
         const colors = require('colors');
+        const moment = require('moment');
         let contents = fs.readFileSync(input, 'utf-8').split('\n');
         let objArray = {
             columns: columns,
@@ -25,8 +26,22 @@ module.exports = {
             }
             let entry = {};
             line.forEach((value, index) => {
-                if (index > 3) {
+                if (index > 3 && index < 7) {
                     value = Number.parseFloat(value);
+                } else if (index === 7) {
+                    value = Number.parseInt(value);
+                    if (value.toString().length < 8) {
+                        value = Number.parseInt(value.toString()[0]);
+                    } else {
+                        value = Number.parseInt(value.toString().slice(0, 2));
+                    }
+                    // error checking
+                    // tests showed okay
+                    // error only for 23 => 0
+                    // if (value !== last && value !== (last + 1)) {
+                    //     throw new Error(`last: ${last} current: ${value}`);
+                    // }
+                    // last = value;
                 } else {
                     value = Number.parseInt(value);
                 }
