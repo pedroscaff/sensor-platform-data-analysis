@@ -15,7 +15,7 @@ date | mq2 | mq135
 
 file | command
 --- | ---
-prenzlberg.csv |
+wholeday.csv | node src/process-data.js --pattern ./data/2-8-23.csv --mq135 98.90 --mq2 61 --output './data/wholeday.csv' --timestamp
 
 ### measurement reports
 

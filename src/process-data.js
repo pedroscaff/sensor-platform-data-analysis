@@ -32,11 +32,24 @@ files.forEach(file => {
     let obj = csv.csvToObjArray(file, columns, [
         {
             column: 0,
-            apply: val => mq2.getPPM(mq2.getResistance(val)).toFixed(2)
+            apply: val => {
+                if (val > 0 && val < 1024) {
+                    return mq2.getPPM(mq2.getResistance(val)).toFixed(2);
+                } else {
+                    // -1 as invalid read from sensor
+                    return -1;
+                }
+            }
         },
         {
             column: 'mq135',
-            apply: val => mq135.getPPM(mq135.getResistance(val)).toFixed(2)
+            apply: val => {
+                if (val > 0 && val < 1024) {
+                    return mq135.getPPM(mq135.getResistance(val)).toFixed(2);
+                } else {
+                    return -1;
+                }
+            }
         }
     ]);
     allCsvs.entries = allCsvs.entries.concat(obj.entries);
