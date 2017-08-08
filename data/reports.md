@@ -15,11 +15,17 @@ date | mq2 | mq135
 
 file | command
 --- | ---
-wholeday.csv | node src/process-data.js --pattern ./data/2-8-23.csv --mq135 98.90 --mq2 61 --output './data/wholeday.csv' --timestamp
+wholeday.csv | `node src/process-data.js --pattern ./data/2-8-23.csv --mq135 98.90 --mq2 61 --output './data/wholeday.csv' --timestamp`
 
 ### measurement reports
 
-#### 14.08
+- 06.08
+    - `6-12-*.csv`: drone data
+    - `6-2*.csv`: balcony data
+- 14.07
+    - `14.13.42.csv`: altitude data
+
+#### 14.07
 
 time | observation
 --- | ---

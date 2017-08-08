@@ -28,7 +28,7 @@ class MQ2 {
      * @param {Number} voltage - voltage in range 0..1023
      * @returns {Number} resistance - ((Vcc * Rl) / voltage) - Rl
      */
-    getResistance(voltage) {
+    getResistance(voltage, gas) {
         return ((1023 * this.rLoad_) / voltage) - this.rLoad_;
     }
 
@@ -37,7 +37,7 @@ class MQ2 {
      * @param {Number} resistance - current sensor resistance
      * @returns {Number} value in PPM - PAR_A * (Rs/R0) ^ PAR_B
      */
-    getPPM(resistance) {
+    getPPM(resistance, gas) {
         return PAR_A * Math.pow((resistance/this.rZero_), PAR_B);
     }
 }

@@ -31,7 +31,7 @@ class MQ135 {
      * @param {Number} rZero - Calibration resistance at atmospheric CO2 level (get it using getResistance(calibrationVoltage))
      * @returns {void}
      */
-    setRZero(resistance) {
+    setRZero(resistance, gas) {
         this.rZero_ = resistance * Math.exp(Math.log(PAR_A / ATMOCO2) / PAR_B);
     }
 
