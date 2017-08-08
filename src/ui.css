@@ -1,0 +1,24 @@
+.ui-controls {
+    width: 200px;
+    color: white;
+    padding: 1em;
+    user-select: none;
+    cursor: default;
+}
+
+.ui-controls > * {
+    padding: 2px;
+    width: inherit;
+}
+
+.ui-controls-title {
+    padding: 0px;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.ui-controls-subtitle {
+    padding: 0px;
+    font-size: 1em;
+    text-align: center;
+}
