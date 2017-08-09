@@ -1,0 +1,24 @@
+{
+    "query": {
+        "facets": [
+            "timestamp"
+        ],
+        "namespace": {
+            "avg_hour": {
+                "source": [
+                    "mq135"
+                ],
+                "apply": [
+                    {
+                        "type": "aggregate",
+                        "fn": "average"
+                    }
+                ]
+            }
+        },
+        "metrics": [
+            "avg_hour"
+        ],
+        "version": 0.3
+    }
+}

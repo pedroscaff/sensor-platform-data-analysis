@@ -1,0 +1,13 @@
+.y-axis, x-axis {
+    color: #ffffff;
+}
+
+.y-axis > path {
+    stroke: #ffffff;
+    fill: none;
+}
+
+.x-axis > path {
+    stroke: #ffffff;
+    fill: none;
+}

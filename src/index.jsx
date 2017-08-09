@@ -3,10 +3,9 @@ import {scaleQuantize} from 'd3-scale';
 import UIControls from './UIControls.jsx';
 import ReactDOM from 'react-dom';
 import React from 'react';
+import Chart from './Chart.js';
 
 import {app_id, app_code, queries} from '../datalens.json';
-
-const {query} = queries;
 
 // Initialize communication with the platform
 const platform = new H.service.Platform({
@@ -44,7 +43,7 @@ H.ui.UI.createDefault(map, defaultLayers);
 let service = platform.configure(new H.datalens.Service());
 
 // Get query stats
-service.fetchQueryStats(query.id, {
+service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
     stats: [
         {
             column_stats: {
@@ -94,9 +93,9 @@ service.fetchQueryStats(query.id, {
         }
     ];
 
-    const provider = new H.datalens.QueryTileProvider(
+    const prenzlbergTempelhofProvider = new H.datalens.QueryTileProvider(
         service, {
-            queryId: query.id,
+            queryId: queries['prenzlbergTempelhof'].id,
             tileParamNames: {
                 x: 'x',
                 y: 'y',
@@ -105,8 +104,8 @@ service.fetchQueryStats(query.id, {
         }
     );
 
-    const layer = new H.datalens.HeatmapLayer(
-        provider, {
+    const prenzlbergTempelhofLayer = new H.datalens.HeatmapLayer(
+        prenzlbergTempelhofProvider, {
             rowToTilePoint: function(row) {
                 return {
                     x: row.tx,
@@ -124,7 +123,7 @@ service.fetchQueryStats(query.id, {
         }
     );
 
-    map.addLayer(layer);
+    map.addLayer(prenzlbergTempelhofLayer);
 
     // create panel
     let legendLabels = [
@@ -133,17 +132,85 @@ service.fetchQueryStats(query.id, {
         'CO'
     ];
 
-    let selectLabels = [
-        {value: 'V002', label: 'CO2'},
-        {value: 'V003', label: 'NH3'},
-        {value: 'V004', label: 'CO'}
+    let gasSelectLabels = [
+        {value: 'co2', label: 'CO2'},
+        {value: 'nh3', label: 'NH3'},
+        {value: 'co', label: 'CO'}
     ];
+
+    let layerSelectLabels = [
+        {value: '0', label: 'Prenzlberg-tempelhof'},
+        {value: '1', label: 'Hourly'},
+        {value: '2', label: 'Altidude'}
+    ];
+
+    function onSliderChange(value) {
+        console.log(value);
+    }
+
+    let chart = new Chart();
+
+    /**
+    * update layers
+    * @returns {Object} - new labels for the legend, used by uiControls component
+    */
+    function updateLayers(key) {
+        if ('0' === key) {
+            let currentLayers = map.getLayes();
+            if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
+                // map.removeLayer()
+                chart.hide();
+                map.addLayer(prenzlbergTempelhofLayer);
+            }
+        } else if ('1' === key) {
+            map.removeLayer(prenzlbergTempelhofLayer);
+            service.fetchQueryData(queries['wholeday-chart'].id).then(data => {
+                chart.setData(data.rows);
+                chart.draw();
+            });
+
+        }
+        // let categories, scale;
+        // let currentLayers = map.getLayers();
+        // switch (key) {
+        //     case 'co2':
+        //         map.removeLayer();
+        // }
+        // if (key === 'all') {
+        //     if (currentLayers.indexOf(majorityLayer) === -1) {
+        //         map.removeLayer(singleLayer);
+        //         map.addLayer(majorityLayer);
+        //     }
+        //     categories = legendLabels;
+        //     scale = majorityScale;
+        // } else if (key === 'clear') {
+        //     map.removeLayer(singleLayer);
+        //     map.removeLayer(majorityLayer);
+        //     return;
+        // } else {
+        //     if (currentLayers.indexOf(singleLayer) === -1) {
+        //         map.removeLayer(majorityLayer);
+        //     } else {
+        //         map.removeLayer(singleLayer);
+        //     }
+        // }
+        // return {categories: categories, scale: scale};
+    }
+
+    function updateGas(gas) {
+        console.log(gas);
+    }
 
     let uiControls = <UIControls
         title = 'Sensor Platform Monitoring'
         subtitle = ''
-        defaultLabel = {selectLabels[0].label}
-        selectLabels = {selectLabels}
+        gasDefaultValue = {gasSelectLabels[0].value}
+        gasSelectLabels = {gasSelectLabels}
+        layerSelectLabels = {layerSelectLabels}
+        layerDefaultValue = {layerSelectLabels[0].value}
+        onLayerChange = {updateLayers}
+        onGasChange = {updateGas}
+        onSliderChange = {onSliderChange}
         legendLabels = {legendLabels}
         />;
 
@@ -152,41 +219,3 @@ service.fetchQueryStats(query.id, {
         document.getElementById('root')
     );
 });
-/**
-* update layers
-* @returns {Object} - new labels for the legend, used by uiControls component
-*/
-// function updateLayers(key) {
-//     let categories, scale;
-//     let currentLayers = map.getLayers();
-//     if (key === 'all') {
-//         if (currentLayers.indexOf(majorityLayer) === -1) {
-//             map.removeLayer(singleLayer);
-//             map.addLayer(majorityLayer);
-//         }
-//         categories = legendLabels;
-//         scale = majorityScale;
-//     } else if (key === 'clear') {
-//         map.removeLayer(singleLayer);
-//         map.removeLayer(majorityLayer);
-//         return;
-//     } else {
-//         if (currentLayers.indexOf(singleLayer) === -1) {
-//             map.removeLayer(majorityLayer);
-//         } else {
-//             map.removeLayer(singleLayer);
-//         }
-//         // let domain = extent(data, entry => {
-//         //     let value = Number.parseInt(entry[key]);
-//         //     if (!Number.isNaN(value)) {
-//         //         return Math.sqrt(value);
-//         //     } else {
-//         //         return 0;
-//         //     }
-//         // });
-//         // let scale = scalePow(0.5).domain(domain).range(singleColors);
-//         scale = scaleLinear([0, 1]).range(singleColors);
-//         addSingleLayer(singleFillColor.bind(null, scale, key));
-//     }
-//     return {categories: categories, scale: scale};
-// }
