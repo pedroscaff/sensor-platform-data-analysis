@@ -1,3 +1,8 @@
+.axis > .tick > * {
+    fill: #ffffff;
+    stroke: #ffffff;
+}
+
 .y-axis, x-axis {
     color: #ffffff;
 }
@@ -10,4 +15,12 @@
 .x-axis > path {
     stroke: #ffffff;
     fill: none;
+}
+
+.chart-hidden {
+    visibility: hidden;
+}
+
+.root-svg {
+    background-color: rgba(31, 38, 42, 0.8);
 }

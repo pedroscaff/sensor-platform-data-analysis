@@ -19,13 +19,10 @@
     "classnames": "^2.2.5",
     "d3-array": "^1.2.0",
     "d3-axis": "^1.0.8",
-    "d3-dsv": "^1.0.5",
     "d3-format": "^1.1.1",
     "d3-scale": "^1.0.5",
     "d3-selection": "^1.1.0",
     "d3-shape": "^1.2.0",
-    "d3-time": "^1.0.7",
-    "d3-time-format": "^2.0.5",
     "exports-loader": "^0.6.4",
     "extract-text-webpack-plugin": "^2.1.2",
     "imports-loader": "^0.7.1",
@@ -36,8 +33,7 @@
     "react-dropdown": "^1.2.1",
     "react-select": "^1.0.0-rc.3",
     "react-slider": "^0.8.0",
-    "webpack": "^2.7.0",
-    "whatwg-fetch": "^2.0.3"
+    "webpack": "^2.7.0"
   },
   "config": {},
   "devDependencies": {

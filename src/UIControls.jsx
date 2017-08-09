@@ -106,7 +106,9 @@ class UIControls extends React.Component {
                     placeholder='Select gas'
                 />
             <Slider className='ui-controls-slider'
-                    defaultValue={[0, 100]}
+                    defaultValue={[0, 23]}
+                    min={0}
+                    max={23}
                     withBars={true}
                     orientation='horizontal'
                     onChange={this._onSliderChange.bind(this)}

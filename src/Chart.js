@@ -13,49 +13,83 @@ class Chart {
         }
     }
     setData(data) {
-        this.data = data;
-        // TODO update chart
+        this.data = [];
+        data.forEach(d => {
+            this.data.push({
+                x: d[1],
+                y: d[0]
+            });
+        });
+        this.data.sort((a, b) => a.x < b.x ? -1 : 1);
+        this.draw();
     }
     hide() {
-        
+        this.svg.classed('chart-hidden', true);
     }
-    draw() {
-        let margin = {top: 20, right: 20, bottom: 20, left: 20}
-        this.svg = select('#chart')
-            .attr('width', 400)
-            .attr('height', 400);
-
-        let width = 400 - margin.left - margin.top;
-        let height = 400 - margin.top - margin.bottom;
+    show() {
+        this.svg.classed('chart-hidden', false);
+    }
+    createChart() {
         this.g = this.svg.append('g')
-            .attr('transform', `translate(${margin.left}, ${margin.bottom})`);
-        let x = scaleOrdinal().domain([0, 23]).range([0, width]);
-        let yDomain = extent(this.data, d => d[0]);
-        let y = scaleLinear().domain(yDomain).range([height, 0]);
-        let line = d3Line().x(d => x(d[1])).y(d => y(d[0]));
+            .attr('transform', `translate(${this.margin.left}, ${
+                this.margin.bottom})`);
+        let xDomain = this.data.map(d => d.x);
+        let xRange = [];
+        let interval = Math.ceil(this.width / (this.data.length - 1));
+        for (let i = 0; i < this.data.length; i++) {
+            xRange.push(interval * i);
+        }
+        let x = scaleOrdinal().domain(xDomain).range(xRange);
+        let yDomain = extent(this.data, d => d.y);
+        let y = scaleLinear().domain(yDomain).range([this.height, 0]);
+        let line = d3Line().x(d => x(d.x)).y(d => y(d.y));
 
         this.g.append('g')
                 .call(axisLeft(y))
-                .attr('class', 'y-axis')
+                .classed('axis', true)
+                .classed('y-axis', true)
             .append('text')
                 .attr('fill', '#ffffff')
+                .attr('x', 7)
                 .text('CO2 PPM');
 
         this.g.append('g')
                 .call(axisBottom(x))
-                .attr('class', 'x-axis')
-                .attr('transform', `translate(0, ${height})`)
+                .classed('axis', true)
+                .classed('x-axis', true)
+                .attr('transform', `translate(0, ${this.height})`)
             .append('text')
-            .text('Hour');
+                .attr('fill', '#ffffff')
+                .attr('x', this.width)
+                .text('Hour');
 
-        this.g.append('path')
+        this.line = this.g
+            .append('path')
             .datum(this.data)
+            .attr('class', 'chart-path')
             .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
+            .attr('stroke', 'white')
             .attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
             .attr('stroke-width', 1.5)
             .attr('d', line);
+    }
+    draw() {
+        if (this.initialized === true) {
+            this.svg.selectAll('g').remove();
+            this.createChart();
+        } else {
+            this.initialized = true;
+            this.margin = {top: 20, right: 20, bottom: 20, left: 40}
+            this.svg = select('#chart')
+                .classed('root-svg', true)
+                .attr('width', 400)
+                .attr('height', 400);
+
+            this.width = 400 - this.margin.left - this.margin.top;
+            this.height = 400 - this.margin.top - this.margin.bottom;
+            this.createChart();
+        }
     }
 }
 

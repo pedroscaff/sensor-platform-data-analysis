@@ -144,11 +144,15 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         {value: '2', label: 'Altidude'}
     ];
 
+    let sliderRange = [0, 23];
     function onSliderChange(value) {
-        console.log(value);
+        sliderRange = value;
+        chart.setData(chartData.filter(d =>
+            d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
     }
 
     let chart = new Chart();
+    let chartData;
 
     /**
     * update layers
@@ -156,7 +160,7 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
     */
     function updateLayers(key) {
         if ('0' === key) {
-            let currentLayers = map.getLayes();
+            let currentLayers = map.getLayers();
             if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
                 // map.removeLayer()
                 chart.hide();
@@ -164,11 +168,18 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
             }
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
-            service.fetchQueryData(queries['wholeday-chart'].id).then(data => {
-                chart.setData(data.rows);
-                chart.draw();
-            });
-
+            if (chartData) {
+                chart.setData(chartData.filter(d =>
+                    d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+                chart.show();
+            } else {
+                service.fetchQueryData(queries['wholeday-chart'].id).then(data => {
+                    chartData = data.rows;
+                    chart.setData(chartData.filter(d =>
+                        d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+                    chart.show();
+                });
+            }
         }
         // let categories, scale;
         // let currentLayers = map.getLayers();
