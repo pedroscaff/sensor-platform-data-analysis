@@ -1,9 +1,17 @@
 'use strict';
 
-// Parameters for calculating ppm of CO2 from sensor resistance
+// Parameters for calculating ppm of gases from sensor resistance
 // y = a * x ^ b
-const PAR_A = 116.6020682;
-const PAR_B = -2.769034857;
+const PARAMS = {
+    co2: {
+        a: 116.6020682,
+        b: -2.769034857
+    },
+    nh4: {
+        a: 108.02,
+        b: -2.4693
+    }
+}
 
 // Parameters to model temperature and humidity dependence
 const CORA = 0.00035;
@@ -32,7 +40,8 @@ class MQ135 {
      * @returns {void}
      */
     setRZero(resistance, gas) {
-        this.rZero_ = resistance * Math.exp(Math.log(PAR_A / ATMOCO2) / PAR_B);
+        this.rZero_ = resistance * Math.exp(
+            Math.log(PARAMS[gas].a / ATMOCO2) / PARAMS[gas].b);
     }
 
     /**
@@ -49,8 +58,9 @@ class MQ135 {
      * @param {Number} resistance - current sensor resistance
      * @returns {Number} value in PPM - PAR_A * (Rs/R0) ^ PAR_B
      */
-    getPPM(resistance) {
-        return PAR_A * Math.pow((resistance/this.rZero_), PAR_B);
+    getPPM(resistance, gas) {
+        return PARAMS[gas].a * Math.pow(
+            (resistance/this.rZero_), PARAMS[gas].b);
     }
 }
 

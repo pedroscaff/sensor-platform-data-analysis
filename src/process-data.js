@@ -22,7 +22,7 @@ let allCsvs = {
 
 const MQ135 = require('./MQ135.js');
 let mq135 = new MQ135(20.0);
-mq135.setRZero(mq135.getResistance(argv.mq135));
+mq135.setRZero(mq135.getResistance(argv.mq135), 'co2');
 
 const MQ2 = require('./MQ2.js');
 let mq2 = new MQ2(10.0);
@@ -45,7 +45,7 @@ files.forEach(file => {
             column: 'mq135',
             apply: val => {
                 if (val > 0 && val < 1024) {
-                    return mq135.getPPM(mq135.getResistance(val)).toFixed(2);
+                    return mq135.getPPM(mq135.getResistance(val), 'co2').toFixed(2);
                 } else {
                     return -1;
                 }
