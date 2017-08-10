@@ -1,10 +1,10 @@
 import './bootstrap/css/bootstrap.css';
-import './ui.css';
 import React from 'react';
 
 import Select from 'react-select';
 import Slider from 'react-slider';
 import 'react-select/dist/react-select.css';
+import './ui.css';
 // import Legend from './Legend.jsx';
 
 const PROP_TYPES = {
@@ -91,14 +91,14 @@ class UIControls extends React.Component {
             <div className='ui-controls'>
                 <h4 className='ui-controls-title'> {this.props.title} </h4>
                 <h6 className='ui-controls-subtitle'> {this.props.subtitle}</h6>
-                <Select
+                <Select className='ui-controls-select'
                     options={this.props.layerSelectLabels}
                     onChange={this._onLayerChange.bind(this)}
                     name='Select-dropdown-layer'
                     value={this.state.layerValue}
                     placeholder='Select viz'
                 />
-                <Select
+                <Select className='ui-controls-select'
                     options={this.props.gasSelectLabels}
                     onChange={this._onGasChange.bind(this)}
                     name='Select-dropdown-gas'

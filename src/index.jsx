@@ -1,5 +1,5 @@
 import './index.css';
-import {scaleQuantize} from 'd3-scale';
+import {scaleLinear, scalePow} from 'd3-scale';
 import UIControls from './UIControls.jsx';
 import ReactDOM from 'react-dom';
 import React from 'react';
@@ -69,30 +69,6 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         columnStats.lon_avg.$max
     ), false);
 
-    const colors = [
-        'rgb(158, 1, 66)',
-        'rgb(238, 100, 69)',
-        'rgb(250, 177, 88)',
-        'rgb(243, 250, 173)',
-        'rgb(199, 250, 173)',
-        'rgb(152, 213, 163)',
-        'rgb(92, 183, 169)'
-    ];
-
-    //init controls
-    // const bandwidthCtl = new Slider(10);
-
-    let bandwidth = [
-        {
-            value: 0.5,
-            zoom: 4
-        },
-        {
-            value: 4,
-            zoom: 17
-        }
-    ];
-
     const prenzlbergTempelhofProvider = new H.datalens.QueryTileProvider(
         service, {
             queryId: queries['prenzlbergTempelhof'].id,
@@ -110,16 +86,29 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
                 return {
                     x: row.tx,
                     y: row.ty,
-                    value: row.co2_ppm,
+                    value: Number(row.co2_ppm),
                     count: row.count
                 };
             },
-            bandwidth,
+            bandwidth: () => {
+                return scaleLinear().domain([0, 100]).range([1, 42])(16);
+            },
             aggregation: H.datalens.HeatmapLayer.Aggregation.AVERAGE,
-            // valueRange: [columnStats.co2_ppm.$min, columnStats.co2_ppm.$max],
-            valueRange: [100, 600],
-            colorScale: scaleQuantize().domain([0, 1]).range(colors),
-            inputScale: H.datalens.HeatmapLayer.InputScale.LINEAR
+            valueRange: () => {
+                let range = [0, 100];
+                return range.map(
+                    scaleLinear().domain([0, 100]).range([0, 600]));
+            },
+            colorScale: scaleLinear().domain([0, .5, 1]).range([
+                'rgba(202, 248, 191, 1)',
+                'rgba(87, 164, 217, 1)',
+                'rgba(30, 68, 165, 1)'
+            ]),
+            countRange: () => {
+                let range = [0, 80];
+                return range.map(
+                    scalePow().exponent(2).domain([0, 100]).range([0, 1]));
+            }
         }
     );
 

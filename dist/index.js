@@ -17615,7 +17615,7 @@ module.exports = getIteratorFn;
 /* 193 */
 /***/ (function(module, exports) {
 
-module.exports = {"app_id":"in2pu7pura4wetagevAb","app_code":"py5JthxGeTnFXDNPQEIiRA","host":"cit.datalens.api.here.com","queries":{"prenzlbergTempelhof":{"fileName":"./query.json","dataset":"912123cbf895457692acddc51050bd0f","id":"e02e56c4e2294653948a7949724d6715"},"wholeday-chart":{"fileName":"./day-query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"16373d450474478bae0f0dfeb2425e8f"},"wholeday-heatmap":{"fileName":"./query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7"}}}
+module.exports = {"app_id":"in2pu7pura4wetagevAb","app_code":"py5JthxGeTnFXDNPQEIiRA","host":"cit.datalens.api.here.com","queries":{"prenzlbergTempelhof":{"fileName":"./query.json","dataset":"912123cbf895457692acddc51050bd0f","id":"e02e56c4e2294653948a7949724d6715"},"wholeday-chart":{"fileName":"./day-query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"16373d450474478bae0f0dfeb2425e8f"}}}
 
 /***/ }),
 /* 194 */
@@ -17748,8 +17748,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 __webpack_require__(452);
 
-__webpack_require__(454);
-
 var _react = __webpack_require__(8);
 
 var _react2 = _interopRequireDefault(_react);
@@ -17763,6 +17761,8 @@ var _reactSlider = __webpack_require__(436);
 var _reactSlider2 = _interopRequireDefault(_reactSlider);
 
 __webpack_require__(451);
+
+__webpack_require__(454);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17893,14 +17893,14 @@ var UIControls = function (_React$Component) {
                     ' ',
                     this.props.subtitle
                 ),
-                _react2.default.createElement(_reactSelect2.default, {
+                _react2.default.createElement(_reactSelect2.default, { className: 'ui-controls-select',
                     options: this.props.layerSelectLabels,
                     onChange: this._onLayerChange.bind(this),
                     name: 'Select-dropdown-layer',
                     value: this.state.layerValue,
                     placeholder: 'Select viz'
                 }),
-                _react2.default.createElement(_reactSelect2.default, {
+                _react2.default.createElement(_reactSelect2.default, { className: 'ui-controls-select',
                     options: this.props.gasSelectLabels,
                     onChange: this._onGasChange.bind(this),
                     name: 'Select-dropdown-gas',
@@ -18034,19 +18034,6 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
     // Set map bounds
     map.setViewBounds(new H.geo.Rect(columnStats.lat_avg.$max, columnStats.lon_avg.$min, columnStats.lat_avg.$min, columnStats.lon_avg.$max), false);
 
-    var colors = ['rgb(158, 1, 66)', 'rgb(238, 100, 69)', 'rgb(250, 177, 88)', 'rgb(243, 250, 173)', 'rgb(199, 250, 173)', 'rgb(152, 213, 163)', 'rgb(92, 183, 169)'];
-
-    //init controls
-    // const bandwidthCtl = new Slider(10);
-
-    var bandwidth = [{
-        value: 0.5,
-        zoom: 4
-    }, {
-        value: 4,
-        zoom: 17
-    }];
-
     var prenzlbergTempelhofProvider = new H.datalens.QueryTileProvider(service, {
         queryId: _datalens.queries['prenzlbergTempelhof'].id,
         tileParamNames: {
@@ -18061,16 +18048,23 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
             return {
                 x: row.tx,
                 y: row.ty,
-                value: row.co2_ppm,
+                value: Number(row.co2_ppm),
                 count: row.count
             };
         },
-        bandwidth: bandwidth,
+        bandwidth: function bandwidth() {
+            return (0, _d3Scale.scaleLinear)().domain([0, 100]).range([1, 42])(16);
+        },
         aggregation: H.datalens.HeatmapLayer.Aggregation.AVERAGE,
-        // valueRange: [columnStats.co2_ppm.$min, columnStats.co2_ppm.$max],
-        valueRange: [100, 600],
-        colorScale: (0, _d3Scale.scaleQuantize)().domain([0, 1]).range(colors),
-        inputScale: H.datalens.HeatmapLayer.InputScale.LINEAR
+        valueRange: function valueRange() {
+            var range = [0, 100];
+            return range.map((0, _d3Scale.scaleLinear)().domain([0, 100]).range([0, 600]));
+        },
+        colorScale: (0, _d3Scale.scaleLinear)().domain([0, .5, 1]).range(['rgba(202, 248, 191, 1)', 'rgba(87, 164, 217, 1)', 'rgba(30, 68, 165, 1)']),
+        countRange: function countRange() {
+            var range = [0, 80];
+            return range.map((0, _d3Scale.scalePow)().exponent(2).domain([0, 100]).range([0, 1]));
+        }
     });
 
     map.addLayer(prenzlbergTempelhofLayer);
@@ -18234,7 +18228,7 @@ exports = module.exports = __webpack_require__(31)(undefined);
 
 
 // module
-exports.push([module.i, ".ui-controls {\n    width: 200px;\n    color: white;\n    padding: 1em;\n    user-select: none;\n    cursor: default;\n}\n\n.ui-controls > * {\n    padding: 2px;\n    width: inherit;\n}\n\n.ui-controls-title {\n    padding: 0px;\n    font-size: 1.5em;\n    text-align: center;\n}\n\n.ui-controls-subtitle {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n}\n\n.ui-controls-slider {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n    width: inherit;\n    max-width: 500px;\n    height: 50px;\n}\n\n.ui-controls-slider .handle {\n    font-size: 0.9em;\n    text-align: center;\n    background-color: #b3d8e0;\n    color: #b3d8e0;\n    border: 3px solid #156b7c;\n    cursor: pointer;\n    border-radius: 50%;\n    top: 12px;\n    width: 25px;\n    height: 25px;\n    line-height: 48px;\n}\n\n.ui-controls-slider .handle.active {\n    background-color: grey;\n}\n\n.ui-controls-slider .bar {\n    position: relative;\n    background: #ddd;\n    top: 20px;\n    height: 10px;\n}\n.ui-controls-slider .bar.bar-1 {\n    background: #238193;\n}\n.ui-controls-slider .bar.bar-2 {\n    background: #ddd;\n}\n", ""]);
+exports.push([module.i, ".ui-controls {\n    width: 200px;\n    color: white;\n    padding: 1em;\n    user-select: none;\n    cursor: default;\n}\n\n.ui-controls > * {\n    padding: 2px;\n    width: inherit;\n}\n\n.ui-controls-title {\n    padding: 0px;\n    font-size: 1.5em;\n    text-align: center;\n}\n\n.ui-controls-subtitle {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n}\n\n.ui-controls-select > .Select-control {\n    background-color: rgba(31, 38, 42, 1);\n    border-width: 0px;\n}\n\n.ui-controls-select > .Select-control > * {\n    color: white !important;\n}\n\n.ui-controls-select > .Select-control > span > .Select-value > * {\n    color: white !important;\n}\n\n.ui-controls-slider {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n    width: inherit;\n    max-width: 195px;\n    height: 50px;\n}\n\n.ui-controls-slider .handle {\n    font-size: 0.9em;\n    text-align: center;\n    background-color: rgba(31, 38, 42, 1);\n    color: rgba(31, 38, 42, 1);\n    border: 3px solid white;\n    cursor: pointer;\n    border-radius: 50%;\n    top: 12px;\n    width: 20px;\n    height: 20px;\n    line-height: 48px;\n}\n\n.ui-controls-slider .handle.active {\n    background-color: grey;\n}\n\n.ui-controls-slider .bar {\n    position: relative;\n    background: white;\n    height: 3px;\n    top: 20px;\n}\n.ui-controls-slider .bar.bar-1 {\n    background: white;\n    height: 3px;\n}\n.ui-controls-slider .bar.bar-2 {\n    background: white;\n    height: 3px;\n}\n", ""]);
 
 // exports
 
