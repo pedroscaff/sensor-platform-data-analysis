@@ -99,9 +99,9 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
                 return range.map(
                     scaleLinear().domain([0, 100]).range([0, 600]));
             },
-            colorScale: scaleLinear().domain([0, .5, 1]).range([
+            colorScale: scaleLinear().domain([0, 1]).range([
                 'rgba(202, 248, 191, 1)',
-                'rgba(87, 164, 217, 1)',
+                // 'rgba(87, 164, 217, 1)',
                 'rgba(30, 68, 165, 1)'
             ]),
             countRange: () => {
@@ -134,10 +134,14 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
     ];
 
     let sliderRange = [0, 23];
-    function onSliderChange(value) {
-        sliderRange = value;
-        chart.setData(chartData.filter(d =>
-            d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+    function onSliderChange(value, key) {
+        if ('hour' === key) {
+            sliderRange = value;
+            chart.setData(chartData.filter(d =>
+                d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+        } else if ('alt' === key) {
+            console.log(value);
+        }
     }
 
     let chart = new Chart();
@@ -199,6 +203,10 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
 
     function updateGas(gas) {
         console.log(gas);
+    }
+
+    function updateAltitude(altitude) {
+        console.log(altitude);
     }
 
     let uiControls = <UIControls

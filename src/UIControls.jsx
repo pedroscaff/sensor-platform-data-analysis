@@ -77,8 +77,8 @@ class UIControls extends React.Component {
             this.props.onGasChange('clear');
         }
     }
-    _onSliderChange(value) {
-        this.props.onSliderChange(value);
+    _onSliderChange(key, value) {
+        this.props.onSliderChange(value, key);
     }
     componentDidMount() {
         this.setState({
@@ -105,13 +105,23 @@ class UIControls extends React.Component {
                     value={this.state.gasValue}
                     placeholder='Select gas'
                 />
-            <Slider className='ui-controls-slider'
+                <h6 className='slider-title'>Altitude Filter</h6>
+                <Slider className='ui-controls-slider'
+                    defaultValue={[0, 70]}
+                    min={0}
+                    max={70}
+                    withBars={true}
+                    orientation='horizontal'
+                    onChange={this._onSliderChange.bind(this, 'alt')}
+                />
+                <h6 className='slider-title-2'>Time Filter</h6>
+                <Slider className='ui-controls-slider'
                     defaultValue={[0, 23]}
                     min={0}
                     max={23}
                     withBars={true}
                     orientation='horizontal'
-                    onChange={this._onSliderChange.bind(this)}
+                    onChange={this._onSliderChange.bind(this, 'hour')}
                 />
             </div>
         );

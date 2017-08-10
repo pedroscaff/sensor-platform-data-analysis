@@ -17863,8 +17863,8 @@ var UIControls = function (_React$Component) {
         }
     }, {
         key: '_onSliderChange',
-        value: function _onSliderChange(value) {
-            this.props.onSliderChange(value);
+        value: function _onSliderChange(key, value) {
+            this.props.onSliderChange(value, key);
         }
     }, {
         key: 'componentDidMount',
@@ -17907,13 +17907,31 @@ var UIControls = function (_React$Component) {
                     value: this.state.gasValue,
                     placeholder: 'Select gas'
                 }),
+                _react2.default.createElement(
+                    'h6',
+                    { className: 'slider-title' },
+                    'Altitude Filter'
+                ),
+                _react2.default.createElement(_reactSlider2.default, { className: 'ui-controls-slider',
+                    defaultValue: [0, 70],
+                    min: 0,
+                    max: 70,
+                    withBars: true,
+                    orientation: 'horizontal',
+                    onChange: this._onSliderChange.bind(this, 'alt')
+                }),
+                _react2.default.createElement(
+                    'h6',
+                    { className: 'slider-title-2' },
+                    'Time Filter'
+                ),
                 _react2.default.createElement(_reactSlider2.default, { className: 'ui-controls-slider',
                     defaultValue: [0, 23],
                     min: 0,
                     max: 23,
                     withBars: true,
                     orientation: 'horizontal',
-                    onChange: this._onSliderChange.bind(this)
+                    onChange: this._onSliderChange.bind(this, 'hour')
                 })
             );
         }
@@ -18060,7 +18078,9 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
             var range = [0, 100];
             return range.map((0, _d3Scale.scaleLinear)().domain([0, 100]).range([0, 600]));
         },
-        colorScale: (0, _d3Scale.scaleLinear)().domain([0, .5, 1]).range(['rgba(202, 248, 191, 1)', 'rgba(87, 164, 217, 1)', 'rgba(30, 68, 165, 1)']),
+        colorScale: (0, _d3Scale.scaleLinear)().domain([0, 1]).range(['rgba(202, 248, 191, 1)',
+        // 'rgba(87, 164, 217, 1)',
+        'rgba(30, 68, 165, 1)']),
         countRange: function countRange() {
             var range = [0, 80];
             return range.map((0, _d3Scale.scalePow)().exponent(2).domain([0, 100]).range([0, 1]));
@@ -18077,11 +18097,15 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
     var layerSelectLabels = [{ value: '0', label: 'Prenzlberg-tempelhof' }, { value: '1', label: 'Hourly' }, { value: '2', label: 'Altidude' }];
 
     var sliderRange = [0, 23];
-    function onSliderChange(value) {
-        sliderRange = value;
-        chart.setData(chartData.filter(function (d) {
-            return d[1] >= sliderRange[0] && d[1] <= sliderRange[1];
-        }));
+    function onSliderChange(value, key) {
+        if ('hour' === key) {
+            sliderRange = value;
+            chart.setData(chartData.filter(function (d) {
+                return d[1] >= sliderRange[0] && d[1] <= sliderRange[1];
+            }));
+        } else if ('alt' === key) {
+            console.log(value);
+        }
     }
 
     var chart = new _Chart2.default();
@@ -18145,6 +18169,10 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
 
     function updateGas(gas) {
         console.log(gas);
+    }
+
+    function updateAltitude(altitude) {
+        console.log(altitude);
     }
 
     var uiControls = _react2.default.createElement(_UIControls2.default, {
@@ -18228,7 +18256,7 @@ exports = module.exports = __webpack_require__(31)(undefined);
 
 
 // module
-exports.push([module.i, ".ui-controls {\n    width: 200px;\n    color: white;\n    padding: 1em;\n    user-select: none;\n    cursor: default;\n}\n\n.ui-controls > * {\n    padding: 2px;\n    width: inherit;\n}\n\n.ui-controls-title {\n    padding: 0px;\n    font-size: 1.5em;\n    text-align: center;\n}\n\n.ui-controls-subtitle {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n}\n\n.ui-controls-select > .Select-control {\n    background-color: rgba(31, 38, 42, 1);\n    border-width: 0px;\n}\n\n.ui-controls-select > .Select-control > * {\n    color: white !important;\n}\n\n.Select-option, .Select-menu-outer {\n    color: white;\n    border-width: 0px;\n    background-color: rgba(31, 38, 42, 1);\n    z-index: 100;\n}\n\n.ui-controls-select > .Select-control > span > .Select-value > * {\n    color: white !important;\n}\n\n.ui-controls-slider {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n    width: inherit;\n    max-width: 195px;\n    height: 50px;\n}\n\n.ui-controls-slider .handle {\n    font-size: 0.9em;\n    text-align: center;\n    background-color: rgba(31, 38, 42, 1);\n    color: rgba(31, 38, 42, 1);\n    border: 3px solid white;\n    cursor: pointer;\n    border-radius: 50%;\n    top: 12px;\n    width: 20px;\n    height: 20px;\n    line-height: 48px;\n}\n\n.ui-controls-slider .handle.active {\n    background-color: grey;\n}\n\n.ui-controls-slider .bar {\n    position: relative;\n    background: white;\n    height: 3px;\n    top: 20px;\n}\n.ui-controls-slider .bar.bar-1 {\n    background: white;\n    height: 3px;\n}\n.ui-controls-slider .bar.bar-2 {\n    background: white;\n    height: 3px;\n}\n", ""]);
+exports.push([module.i, ".ui-controls {\n    width: 200px;\n    color: white;\n    padding: 1em;\n    user-select: none;\n    cursor: default;\n}\n\n.ui-controls > * {\n    padding: 2px;\n    width: inherit;\n}\n\n.ui-controls-title {\n    margin-top: 0px;\n    padding: 0px;\n    font-size: 1.5em;\n    text-align: center;\n}\n\n.ui-controls-subtitle {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n}\n\n.ui-controls-select > .Select-control {\n    background-color: rgba(31, 38, 42, 1);\n    border-width: 0px;\n}\n\n.ui-controls-select > .Select-control > * {\n    color: white !important;\n}\n\n.Select-option, .Select-menu-outer {\n    color: white;\n    border-width: 0px;\n    background-color: rgba(31, 38, 42, 1);\n    z-index: 100;\n}\n\n.ui-controls-select > .Select-control > span > .Select-value > * {\n    color: white !important;\n}\n\n.ui-controls > .slider-title {\n    margin: 0px;\n    margin-top: 4px;\n}\n\n.ui-controls > .slider-title-2 {\n    margin: 0px;\n}\n\n.ui-controls-slider {\n    padding: 0px;\n    font-size: 1em;\n    text-align: center;\n    width: inherit;\n    max-width: 195px;\n    height: 25px;\n}\n\n.ui-controls-slider .handle {\n    font-size: 0.9em;\n    text-align: center;\n    background-color: rgba(31, 38, 42, 1);\n    color: rgba(31, 38, 42, 1);\n    border: 3px solid white;\n    cursor: pointer;\n    border-radius: 50%;\n    /*top: 12px;*/\n    width: 20px;\n    height: 20px;\n    /*line-height: 48px;*/\n}\n\n.ui-controls-slider .handle.active {\n    background-color: grey;\n}\n\n.ui-controls-slider .bar {\n    position: relative;\n    background: white;\n    height: 3px;\n    top: 10px;\n}\n.ui-controls-slider .bar.bar-1 {\n    background: white;\n    height: 3px;\n}\n.ui-controls-slider .bar.bar-2 {\n    background: white;\n    height: 3px;\n}\n", ""]);
 
 // exports
 

@@ -12,6 +12,7 @@
 }
 
 .ui-controls-title {
+    margin-top: 0px;
     padding: 0px;
     font-size: 1.5em;
     text-align: center;
@@ -43,13 +44,22 @@
     color: white !important;
 }
 
+.ui-controls > .slider-title {
+    margin: 0px;
+    margin-top: 4px;
+}
+
+.ui-controls > .slider-title-2 {
+    margin: 0px;
+}
+
 .ui-controls-slider {
     padding: 0px;
     font-size: 1em;
     text-align: center;
     width: inherit;
     max-width: 195px;
-    height: 50px;
+    height: 25px;
 }
 
 .ui-controls-slider .handle {
@@ -60,10 +70,10 @@
     border: 3px solid white;
     cursor: pointer;
     border-radius: 50%;
-    top: 12px;
+    /*top: 12px;*/
     width: 20px;
     height: 20px;
-    line-height: 48px;
+    /*line-height: 48px;*/
 }
 
 .ui-controls-slider .handle.active {
@@ -74,7 +84,7 @@
     position: relative;
     background: white;
     height: 3px;
-    top: 20px;
+    top: 10px;
 }
 .ui-controls-slider .bar.bar-1 {
     background: white;
