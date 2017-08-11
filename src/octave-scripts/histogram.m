@@ -1,11 +1,13 @@
-function [n, idx] = histogram(csvfile)
+function [] = histogram(csvfile)
 
 points = csvread(csvfile);
 x = points(:, 2); % mq135 column
-for i = 1:10000
-    entries(i) = i * 100;
+for i = 1:100
+    edges(i) = i * 10;
 end
 
-[n, idx] = histc(x, edges);
+[n] = histc(x, edges);
+
+bar(edges, n, 'histc');
 
 end
