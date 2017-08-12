@@ -84,10 +84,10 @@ class Chart {
             this.svg = select('#chart')
                 .classed('root-svg', true)
                 .attr('width', 400)
-                .attr('height', 400);
+                .attr('height', 300);
 
             this.width = 400 - this.margin.left - this.margin.top;
-            this.height = 400 - this.margin.top - this.margin.bottom;
+            this.height = 300 - this.margin.top - this.margin.bottom;
             this.createChart();
         }
     }

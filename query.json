@@ -8,7 +8,8 @@
         ],
         "facets": [
             "tx",
-            "ty"
+            "ty",
+            "alt"
         ],
         "namespace": {
             "tx": {

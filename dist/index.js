@@ -17719,10 +17719,10 @@ var Chart = function () {
             } else {
                 this.initialized = true;
                 this.margin = { top: 20, right: 20, bottom: 20, left: 40 };
-                this.svg = (0, _d3Selection.select)('#chart').classed('root-svg', true).attr('width', 400).attr('height', 400);
+                this.svg = (0, _d3Selection.select)('#chart').classed('root-svg', true).attr('width', 400).attr('height', 300);
 
                 this.width = 400 - this.margin.left - this.margin.top;
-                this.height = 400 - this.margin.top - this.margin.bottom;
+                this.height = 300 - this.margin.top - this.margin.bottom;
                 this.createChart();
             }
         }
@@ -17913,9 +17913,9 @@ var UIControls = function (_React$Component) {
                     'Altitude Filter'
                 ),
                 _react2.default.createElement(_reactSlider2.default, { className: 'ui-controls-slider',
-                    defaultValue: [0, 70],
+                    defaultValue: [0, 122],
                     min: 0,
-                    max: 70,
+                    max: 122,
                     withBars: true,
                     orientation: 'horizontal',
                     onChange: this._onSliderChange.bind(this, 'alt')
@@ -18061,13 +18061,22 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
         }
     });
 
+    function dataToRows(data) {
+        return data.rows.filter(function (row) {
+            if (row[6] >= altRange[0] && row[6] <= altRange[1]) {
+                return row;
+            }
+        });
+    }
+
     var prenzlbergTempelhofLayer = new H.datalens.HeatmapLayer(prenzlbergTempelhofProvider, {
+        dataToRows: dataToRows,
         rowToTilePoint: function rowToTilePoint(row) {
             return {
-                x: row.tx,
-                y: row.ty,
-                value: Number(row.co2_ppm),
-                count: row.count
+                x: row[4],
+                y: row[5],
+                value: Number(row[1]),
+                count: row[0]
             };
         },
         bandwidth: function bandwidth() {
@@ -18078,15 +18087,14 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
             var range = [0, 100];
             return range.map((0, _d3Scale.scaleLinear)().domain([0, 100]).range([0, 600]));
         },
-        colorScale: (0, _d3Scale.scaleLinear)().domain([0, 1]).range(['rgba(202, 248, 191, 1)',
-        // 'rgba(87, 164, 217, 1)',
-        'rgba(30, 68, 165, 1)']),
+        colorScale: (0, _d3Scale.scaleLinear)().domain([0, 1]).range(['rgba(202, 248, 191, 1)', 'rgba(30, 68, 165, 1)']),
         countRange: function countRange() {
             var range = [0, 80];
             return range.map((0, _d3Scale.scalePow)().exponent(2).domain([0, 100]).range([0, 1]));
         }
     });
 
+    var currentLayer = prenzlbergTempelhofLayer;
     map.addLayer(prenzlbergTempelhofLayer);
 
     // create panel
@@ -18096,15 +18104,17 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
 
     var layerSelectLabels = [{ value: '0', label: 'Prenzlberg-tempelhof' }, { value: '1', label: 'Hourly' }, { value: '2', label: 'Altidude' }];
 
-    var sliderRange = [0, 23];
-    function onSliderChange(value, key) {
+    var timeRange = [0, 23];
+    var altRange = [0, 122];
+    function onSliderChange(range, key) {
         if ('hour' === key) {
-            sliderRange = value;
+            timeRange = range;
             chart.setData(chartData.filter(function (d) {
-                return d[1] >= sliderRange[0] && d[1] <= sliderRange[1];
+                return d[1] >= timeRange[0] && d[1] <= timeRange[1];
             }));
         } else if ('alt' === key) {
-            console.log(value);
+            altRange = range;
+            currentLayer.redraw();
         }
     }
 
@@ -18121,58 +18131,31 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
             if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
                 // map.removeLayer()
                 chart.hide();
+                currentLayer = prenzlbergTempelhofLayer;
                 map.addLayer(prenzlbergTempelhofLayer);
             }
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
+            // currentLayer = otherLayer;
             if (chartData) {
                 chart.setData(chartData.filter(function (d) {
-                    return d[1] >= sliderRange[0] && d[1] <= sliderRange[1];
+                    return d[1] >= timeRange[0] && d[1] <= timeRange[1];
                 }));
                 chart.show();
             } else {
                 service.fetchQueryData(_datalens.queries['wholeday-chart'].id).then(function (data) {
                     chartData = data.rows;
                     chart.setData(chartData.filter(function (d) {
-                        return d[1] >= sliderRange[0] && d[1] <= sliderRange[1];
+                        return d[1] >= timeRange[0] && d[1] <= timeRange[1];
                     }));
                     chart.show();
                 });
             }
         }
-        // let categories, scale;
-        // let currentLayers = map.getLayers();
-        // switch (key) {
-        //     case 'co2':
-        //         map.removeLayer();
-        // }
-        // if (key === 'all') {
-        //     if (currentLayers.indexOf(majorityLayer) === -1) {
-        //         map.removeLayer(singleLayer);
-        //         map.addLayer(majorityLayer);
-        //     }
-        //     categories = legendLabels;
-        //     scale = majorityScale;
-        // } else if (key === 'clear') {
-        //     map.removeLayer(singleLayer);
-        //     map.removeLayer(majorityLayer);
-        //     return;
-        // } else {
-        //     if (currentLayers.indexOf(singleLayer) === -1) {
-        //         map.removeLayer(majorityLayer);
-        //     } else {
-        //         map.removeLayer(singleLayer);
-        //     }
-        // }
-        // return {categories: categories, scale: scale};
     }
 
     function updateGas(gas) {
         console.log(gas);
-    }
-
-    function updateAltitude(altitude) {
-        console.log(altitude);
     }
 
     var uiControls = _react2.default.createElement(_UIControls2.default, {

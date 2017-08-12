@@ -107,9 +107,9 @@ class UIControls extends React.Component {
                 />
                 <h6 className='slider-title'>Altitude Filter</h6>
                 <Slider className='ui-controls-slider'
-                    defaultValue={[0, 70]}
+                    defaultValue={[0, 122]}
                     min={0}
-                    max={70}
+                    max={122}
                     withBars={true}
                     orientation='horizontal'
                     onChange={this._onSliderChange.bind(this, 'alt')}

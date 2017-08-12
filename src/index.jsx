@@ -80,14 +80,23 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         }
     );
 
+    function dataToRows(data) {
+        return data.rows.filter(row => {
+            if (row[6] >= altRange[0] && row[6] <= altRange[1]) {
+                return row;
+            }
+        });
+    }
+
     const prenzlbergTempelhofLayer = new H.datalens.HeatmapLayer(
         prenzlbergTempelhofProvider, {
+            dataToRows,
             rowToTilePoint: function(row) {
                 return {
-                    x: row.tx,
-                    y: row.ty,
-                    value: Number(row.co2_ppm),
-                    count: row.count
+                    x: row[4],
+                    y: row[5],
+                    value: Number(row[1]),
+                    count: row[0]
                 };
             },
             bandwidth: () => {
@@ -101,7 +110,6 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
             },
             colorScale: scaleLinear().domain([0, 1]).range([
                 'rgba(202, 248, 191, 1)',
-                // 'rgba(87, 164, 217, 1)',
                 'rgba(30, 68, 165, 1)'
             ]),
             countRange: () => {
@@ -112,6 +120,7 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         }
     );
 
+    let currentLayer = prenzlbergTempelhofLayer;
     map.addLayer(prenzlbergTempelhofLayer);
 
     // create panel
@@ -133,14 +142,16 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         {value: '2', label: 'Altidude'}
     ];
 
-    let sliderRange = [0, 23];
-    function onSliderChange(value, key) {
+    let timeRange = [0, 23];
+    let altRange = [0, 122];
+    function onSliderChange(range, key) {
         if ('hour' === key) {
-            sliderRange = value;
+            timeRange = range;
             chart.setData(chartData.filter(d =>
-                d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+                d[1] >= timeRange[0] && d[1] <= timeRange[1]));
         } else if ('alt' === key) {
-            console.log(value);
+            altRange = range;
+            currentLayer.redraw();
         }
     }
 
@@ -157,56 +168,29 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
             if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
                 // map.removeLayer()
                 chart.hide();
+                currentLayer = prenzlbergTempelhofLayer;
                 map.addLayer(prenzlbergTempelhofLayer);
             }
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
+            // currentLayer = otherLayer;
             if (chartData) {
                 chart.setData(chartData.filter(d =>
-                    d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+                    d[1] >= timeRange[0] && d[1] <= timeRange[1]));
                 chart.show();
             } else {
                 service.fetchQueryData(queries['wholeday-chart'].id).then(data => {
                     chartData = data.rows;
                     chart.setData(chartData.filter(d =>
-                        d[1] >= sliderRange[0] && d[1] <= sliderRange[1]));
+                        d[1] >= timeRange[0] && d[1] <= timeRange[1]));
                     chart.show();
                 });
             }
         }
-        // let categories, scale;
-        // let currentLayers = map.getLayers();
-        // switch (key) {
-        //     case 'co2':
-        //         map.removeLayer();
-        // }
-        // if (key === 'all') {
-        //     if (currentLayers.indexOf(majorityLayer) === -1) {
-        //         map.removeLayer(singleLayer);
-        //         map.addLayer(majorityLayer);
-        //     }
-        //     categories = legendLabels;
-        //     scale = majorityScale;
-        // } else if (key === 'clear') {
-        //     map.removeLayer(singleLayer);
-        //     map.removeLayer(majorityLayer);
-        //     return;
-        // } else {
-        //     if (currentLayers.indexOf(singleLayer) === -1) {
-        //         map.removeLayer(majorityLayer);
-        //     } else {
-        //         map.removeLayer(singleLayer);
-        //     }
-        // }
-        // return {categories: categories, scale: scale};
     }
 
     function updateGas(gas) {
         console.log(gas);
-    }
-
-    function updateAltitude(altitude) {
-        console.log(altitude);
     }
 
     let uiControls = <UIControls
