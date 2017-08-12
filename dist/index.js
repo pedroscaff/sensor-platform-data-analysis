@@ -17819,8 +17819,6 @@ var UIControls = function (_React$Component) {
         _this.state = {
             layerValue: 'Simple Comparison',
             gasValue: 'CO2'
-            // categories: this.props.legendLabels,
-            // scale: this.props.scale
         };
         return _this;
     }
@@ -17833,11 +17831,6 @@ var UIControls = function (_React$Component) {
                     layerValue: selected.value
                 });
                 this.props.onLayerChange(selected.value);
-                // let legendParams = this.props.onSelectChange(selected.value);
-                // this.setState({
-                //     scale: legendParams.scale,
-                //     categories: legendParams.categories
-                // });
             } else {
                 this.setState({ layerValue: '' });
                 this.props.onLayerChange('clear');
@@ -17851,11 +17844,6 @@ var UIControls = function (_React$Component) {
                     gasValue: selected.value
                 });
                 this.props.onGasChange(selected.value);
-                // let legendParams = this.props.onSelectChange(selected.value);
-                // this.setState({
-                //     scale: legendParams.scale,
-                //     categories: legendParams.categories
-                // });
             } else {
                 this.setState({ gasValue: '' });
                 this.props.onGasChange('clear');
