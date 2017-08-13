@@ -12,6 +12,11 @@
             "fileName": "./day-query.json",
             "dataset": "c1ee8e4bb4194800a1a8a67b7f9d76d7",
             "id": "16373d450474478bae0f0dfeb2425e8f"
+        },
+        "wholeday-heatmap": {
+            "fileName": "./query-with-timestamp.json",
+            "dataset": "c1ee8e4bb4194800a1a8a67b7f9d76d7",
+            "id": "5f100429da694ece8eab5f3fff51b50c"
         }
     }
 }

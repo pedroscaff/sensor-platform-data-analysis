@@ -17615,7 +17615,7 @@ module.exports = getIteratorFn;
 /* 193 */
 /***/ (function(module, exports) {
 
-module.exports = {"app_id":"in2pu7pura4wetagevAb","app_code":"py5JthxGeTnFXDNPQEIiRA","host":"cit.datalens.api.here.com","queries":{"prenzlbergTempelhof":{"fileName":"./query.json","dataset":"912123cbf895457692acddc51050bd0f","id":"e02e56c4e2294653948a7949724d6715"},"wholeday-chart":{"fileName":"./day-query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"16373d450474478bae0f0dfeb2425e8f"}}}
+module.exports = {"app_id":"in2pu7pura4wetagevAb","app_code":"py5JthxGeTnFXDNPQEIiRA","host":"cit.datalens.api.here.com","queries":{"prenzlbergTempelhof":{"fileName":"./query.json","dataset":"912123cbf895457692acddc51050bd0f","id":"e02e56c4e2294653948a7949724d6715"},"wholeday-chart":{"fileName":"./day-query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"16373d450474478bae0f0dfeb2425e8f"},"wholeday-heatmap":{"fileName":"./query-with-timestamp.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"5f100429da694ece8eab5f3fff51b50c"}}}
 
 /***/ }),
 /* 194 */
@@ -18006,6 +18006,7 @@ var map = new H.Map(document.getElementsByClassName('dl-map')[0], defaultLayers.
     center: new H.geo.Point(52.5194, 13.3989),
     zoom: 13
 });
+map.getBaseLayer().setMin(13);
 
 window.addEventListener('resize', function () {
     map.getViewPort().resize();
@@ -18049,16 +18050,56 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
         }
     });
 
-    function dataToRows(data) {
+    var wholeDayProvider = new H.datalens.QueryTileProvider(service, {
+        queryId: _datalens.queries['wholeday-heatmap'].id,
+        tileParamNames: {
+            x: 'x',
+            y: 'y',
+            z: 'z'
+        }
+    });
+
+    function dataToRows(timestamp, data) {
         return data.rows.filter(function (row) {
             if (row[6] >= altRange[0] && row[6] <= altRange[1]) {
-                return row;
+                if (timestamp) {
+                    if (row[7] >= timeRange[0] && row[7] <= timeRange[1]) {
+                        return row;
+                    }
+                } else {
+                    return row;
+                }
             }
         });
     }
 
     var prenzlbergTempelhofLayer = new H.datalens.HeatmapLayer(prenzlbergTempelhofProvider, {
-        dataToRows: dataToRows,
+        dataToRows: dataToRows.bind(null, false),
+        rowToTilePoint: function rowToTilePoint(row) {
+            return {
+                x: row[4],
+                y: row[5],
+                value: Number(row[1]),
+                count: row[0]
+            };
+        },
+        bandwidth: function bandwidth() {
+            return (0, _d3Scale.scaleLinear)().domain([0, 100]).range([1, 42])(16);
+        },
+        aggregation: H.datalens.HeatmapLayer.Aggregation.AVERAGE,
+        valueRange: function valueRange() {
+            var range = [0, 100];
+            return range.map((0, _d3Scale.scaleLinear)().domain([0, 100]).range([0, 600]));
+        },
+        colorScale: (0, _d3Scale.scaleLinear)().domain([0, 1]).range(['rgba(202, 248, 191, 1)', 'rgba(30, 68, 165, 1)']),
+        countRange: function countRange() {
+            var range = [0, 80];
+            return range.map((0, _d3Scale.scalePow)().exponent(2).domain([0, 100]).range([0, 1]));
+        }
+    });
+
+    var wholeDayLayer = new H.datalens.HeatmapLayer(wholeDayProvider, {
+        dataToRows: dataToRows.bind(null, true),
         rowToTilePoint: function rowToTilePoint(row) {
             return {
                 x: row[4],
@@ -18094,6 +18135,9 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
 
     var timeRange = [0, 23];
     var altRange = [0, 122];
+    var chart = new _Chart2.default();
+    var chartData = void 0;
+
     function onSliderChange(range, key) {
         if ('hour' === key) {
             timeRange = range;
@@ -18106,9 +18150,6 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
         }
     }
 
-    var chart = new _Chart2.default();
-    var chartData = void 0;
-
     /**
     * update layers
     * @returns {Object} - new labels for the legend, used by uiControls component
@@ -18120,11 +18161,13 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
                 // map.removeLayer()
                 chart.hide();
                 currentLayer = prenzlbergTempelhofLayer;
+                map.removeLayer(wholeDayLayer);
                 map.addLayer(prenzlbergTempelhofLayer);
             }
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
-            // currentLayer = otherLayer;
+            currentLayer = wholeDayLayer;
+            map.addLayer(wholeDayLayer);
             if (chartData) {
                 chart.setData(chartData.filter(function (d) {
                     return d[1] >= timeRange[0] && d[1] <= timeRange[1];

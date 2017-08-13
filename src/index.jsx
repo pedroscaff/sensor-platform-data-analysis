@@ -30,6 +30,7 @@ let map = new H.Map(
         zoom: 13
     }
 );
+map.getBaseLayer().setMin(13);
 
 window.addEventListener('resize', function() {
     map.getViewPort().resize();
@@ -80,17 +81,66 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         }
     );
 
-    function dataToRows(data) {
+    const wholeDayProvider = new H.datalens.QueryTileProvider(
+        service, {
+            queryId: queries['wholeday-heatmap'].id,
+            tileParamNames: {
+                x: 'x',
+                y: 'y',
+                z: 'z'
+            }
+        }
+    );
+
+    function dataToRows(timestamp, data) {
         return data.rows.filter(row => {
             if (row[6] >= altRange[0] && row[6] <= altRange[1]) {
-                return row;
+                if (timestamp) {
+                    if (row[7] >= timeRange[0] && row[7] <= timeRange[1]) {
+                        return row;
+                    }
+                } else {
+                    return row;
+                }
             }
         });
     }
 
     const prenzlbergTempelhofLayer = new H.datalens.HeatmapLayer(
         prenzlbergTempelhofProvider, {
-            dataToRows,
+            dataToRows: dataToRows.bind(null, false),
+            rowToTilePoint: function(row) {
+                return {
+                    x: row[4],
+                    y: row[5],
+                    value: Number(row[1]),
+                    count: row[0]
+                };
+            },
+            bandwidth: () => {
+                return scaleLinear().domain([0, 100]).range([1, 42])(16);
+            },
+            aggregation: H.datalens.HeatmapLayer.Aggregation.AVERAGE,
+            valueRange: () => {
+                let range = [0, 100];
+                return range.map(
+                    scaleLinear().domain([0, 100]).range([0, 600]));
+            },
+            colorScale: scaleLinear().domain([0, 1]).range([
+                'rgba(202, 248, 191, 1)',
+                'rgba(30, 68, 165, 1)'
+            ]),
+            countRange: () => {
+                let range = [0, 80];
+                return range.map(
+                    scalePow().exponent(2).domain([0, 100]).range([0, 1]));
+            }
+        }
+    );
+
+    const wholeDayLayer = new H.datalens.HeatmapLayer(
+        wholeDayProvider, {
+            dataToRows: dataToRows.bind(null, true),
             rowToTilePoint: function(row) {
                 return {
                     x: row[4],
@@ -144,6 +194,9 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
 
     let timeRange = [0, 23];
     let altRange = [0, 122];
+    let chart = new Chart();
+    let chartData;
+
     function onSliderChange(range, key) {
         if ('hour' === key) {
             timeRange = range;
@@ -154,9 +207,6 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
             currentLayer.redraw();
         }
     }
-
-    let chart = new Chart();
-    let chartData;
 
     /**
     * update layers
@@ -169,11 +219,13 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
                 // map.removeLayer()
                 chart.hide();
                 currentLayer = prenzlbergTempelhofLayer;
+                map.removeLayer(wholeDayLayer);
                 map.addLayer(prenzlbergTempelhofLayer);
             }
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
-            // currentLayer = otherLayer;
+            currentLayer = wholeDayLayer;
+            map.addLayer(wholeDayLayer);
             if (chartData) {
                 chart.setData(chartData.filter(d =>
                     d[1] >= timeRange[0] && d[1] <= timeRange[1]));
