@@ -17615,7 +17615,7 @@ module.exports = getIteratorFn;
 /* 193 */
 /***/ (function(module, exports) {
 
-module.exports = {"app_id":"in2pu7pura4wetagevAb","app_code":"py5JthxGeTnFXDNPQEIiRA","host":"cit.datalens.api.here.com","queries":{"prenzlbergTempelhof":{"fileName":"./query.json","dataset":"912123cbf895457692acddc51050bd0f","id":"e02e56c4e2294653948a7949724d6715"},"wholeday-chart":{"fileName":"./day-query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"16373d450474478bae0f0dfeb2425e8f"},"wholeday-heatmap":{"fileName":"./query-with-timestamp.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"5f100429da694ece8eab5f3fff51b50c"}}}
+module.exports = {"app_id":"in2pu7pura4wetagevAb","app_code":"py5JthxGeTnFXDNPQEIiRA","host":"cit.datalens.api.here.com","queries":{"prenzlbergTempelhof":{"fileName":"./query.json","dataset":"912123cbf895457692acddc51050bd0f","id":"e02e56c4e2294653948a7949724d6715"},"wholeday-chart":{"fileName":"./day-query.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"16373d450474478bae0f0dfeb2425e8f"},"wholeday-heatmap":{"fileName":"./query-with-timestamp.json","dataset":"c1ee8e4bb4194800a1a8a67b7f9d76d7","id":"5f100429da694ece8eab5f3fff51b50c"},"altitude":{"fileName":"./query.json","dataset":"54265111d8f54b538e088b9ff22855e1","id":"610f6489aee1472b85be5b770c5d87e7"}}}
 
 /***/ }),
 /* 194 */
@@ -18038,8 +18038,19 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
 
 
     var columnStats = stats[0].column_stats;
+
+    var prenzlbergTempelhofBounds = {
+        lat: {
+            max: columnStats.lat_avg.$max,
+            min: columnStats.lat_avg.$min
+        },
+        lon: {
+            max: columnStats.lon_avg.$max,
+            min: columnStats.lon_avg.$min
+        }
+    };
     // Set map bounds
-    map.setViewBounds(new H.geo.Rect(columnStats.lat_avg.$max, columnStats.lon_avg.$min, columnStats.lat_avg.$min, columnStats.lon_avg.$max), false);
+    map.setViewBounds(new H.geo.Rect(prenzlbergTempelhofBounds.lat.max, prenzlbergTempelhofBounds.lon.min, prenzlbergTempelhofBounds.lat.min, prenzlbergTempelhofBounds.lon.max), false);
 
     var prenzlbergTempelhofProvider = new H.datalens.QueryTileProvider(service, {
         queryId: _datalens.queries['prenzlbergTempelhof'].id,
@@ -18052,6 +18063,15 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
 
     var wholeDayProvider = new H.datalens.QueryTileProvider(service, {
         queryId: _datalens.queries['wholeday-heatmap'].id,
+        tileParamNames: {
+            x: 'x',
+            y: 'y',
+            z: 'z'
+        }
+    });
+
+    var altitudeProvider = new H.datalens.QueryTileProvider(service, {
+        queryId: _datalens.queries['altitude'].id,
         tileParamNames: {
             x: 'x',
             y: 'y',
@@ -18123,6 +18143,31 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
         }
     });
 
+    var altitudeLayer = new H.datalens.HeatmapLayer(altitudeProvider, {
+        dataToRows: dataToRows.bind(null, false),
+        rowToTilePoint: function rowToTilePoint(row) {
+            return {
+                x: row[4],
+                y: row[5],
+                value: Number(row[1]),
+                count: row[0]
+            };
+        },
+        bandwidth: function bandwidth() {
+            return (0, _d3Scale.scaleLinear)().domain([0, 100]).range([1, 42])(73);
+        },
+        aggregation: H.datalens.HeatmapLayer.Aggregation.AVERAGE,
+        valueRange: function valueRange() {
+            var range = [0, 100];
+            return range.map((0, _d3Scale.scaleLinear)().domain([0, 100]).range([0, 1200]));
+        },
+        colorScale: (0, _d3Scale.scaleLinear)().domain([0, 1]).range(['rgba(202, 248, 191, 1)', 'rgba(30, 68, 165, 1)']),
+        countRange: function countRange() {
+            var range = [0, 12];
+            return range.map((0, _d3Scale.scalePow)().exponent(2).domain([0, 100]).range([0, 1]));
+        }
+    });
+
     var currentLayer = prenzlbergTempelhofLayer;
     map.addLayer(prenzlbergTempelhofLayer);
 
@@ -18155,19 +18200,24 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
     * @returns {Object} - new labels for the legend, used by uiControls component
     */
     function updateLayers(key) {
+        var currentLayers = map.getLayers();
         if ('0' === key) {
-            var currentLayers = map.getLayers();
             if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
-                // map.removeLayer()
                 chart.hide();
                 currentLayer = prenzlbergTempelhofLayer;
                 map.removeLayer(wholeDayLayer);
+                map.removeLayer(altitudeLayer);
                 map.addLayer(prenzlbergTempelhofLayer);
+                map.setViewBounds(new H.geo.Rect(prenzlbergTempelhofBounds.lat.max, prenzlbergTempelhofBounds.lon.min, prenzlbergTempelhofBounds.lat.min, prenzlbergTempelhofBounds.lon.max), false);
+                map.setZoom(13);
             }
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
+            map.removeLayer(altitudeLayer);
             currentLayer = wholeDayLayer;
-            map.addLayer(wholeDayLayer);
+            if (currentLayers.indexOf(wholeDayLayer) === -1) {
+                map.addLayer(wholeDayLayer);
+            }
             if (chartData) {
                 chart.setData(chartData.filter(function (d) {
                     return d[1] >= timeRange[0] && d[1] <= timeRange[1];
@@ -18181,6 +18231,16 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
                     }));
                     chart.show();
                 });
+            }
+        } else if ('2' === key) {
+            map.removeLayer(prenzlbergTempelhofLayer);
+            map.removeLayer(wholeDayLayer);
+            chart.hide();
+            map.setViewBounds(new H.geo.Rect(52.610279, 13.365875, 52.6093045, 13.367178), false);
+            map.setZoom(20);
+            currentLayer = altitudeLayer;
+            if (currentLayers.indexOf(altitudeLayer) === -1) {
+                map.addLayer(altitudeLayer);
             }
         }
     }

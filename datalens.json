@@ -17,6 +17,11 @@
             "fileName": "./query-with-timestamp.json",
             "dataset": "c1ee8e4bb4194800a1a8a67b7f9d76d7",
             "id": "5f100429da694ece8eab5f3fff51b50c"
+        },
+        "altitude": {
+            "fileName": "./query.json",
+            "dataset": "54265111d8f54b538e088b9ff22855e1",
+            "id": "610f6489aee1472b85be5b770c5d87e7"
         }
     }
 }
