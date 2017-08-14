@@ -18205,7 +18205,7 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
             if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
                 chart.hide();
                 currentLayer = prenzlbergTempelhofLayer;
-                map.removeLayer(wholeDayLayer);
+                // map.removeLayer(wholeDayLayer);
                 map.removeLayer(altitudeLayer);
                 map.addLayer(prenzlbergTempelhofLayer);
                 map.setViewBounds(new H.geo.Rect(prenzlbergTempelhofBounds.lat.max, prenzlbergTempelhofBounds.lon.min, prenzlbergTempelhofBounds.lat.min, prenzlbergTempelhofBounds.lon.max), false);
@@ -18214,10 +18214,10 @@ service.fetchQueryStats(_datalens.queries['prenzlbergTempelhof'].id, {
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
             map.removeLayer(altitudeLayer);
-            currentLayer = wholeDayLayer;
-            if (currentLayers.indexOf(wholeDayLayer) === -1) {
-                map.addLayer(wholeDayLayer);
-            }
+            // currentLayer = wholeDayLayer;
+            // if (currentLayers.indexOf(wholeDayLayer) === -1) {
+            //     map.addLayer(wholeDayLayer);
+            // }
             if (chartData) {
                 chart.setData(chartData.filter(function (d) {
                     return d[1] >= timeRange[0] && d[1] <= timeRange[1];
