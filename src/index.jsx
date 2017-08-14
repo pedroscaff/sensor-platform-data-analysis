@@ -272,7 +272,7 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
             if (currentLayers.indexOf(prenzlbergTempelhofLayer) === -1) {
                 chart.hide();
                 currentLayer = prenzlbergTempelhofLayer;
-                map.removeLayer(wholeDayLayer);
+                // map.removeLayer(wholeDayLayer);
                 map.removeLayer(altitudeLayer);
                 map.addLayer(prenzlbergTempelhofLayer);
                 map.setViewBounds(new H.geo.Rect(
@@ -286,10 +286,10 @@ service.fetchQueryStats(queries['prenzlbergTempelhof'].id, {
         } else if ('1' === key) {
             map.removeLayer(prenzlbergTempelhofLayer);
             map.removeLayer(altitudeLayer);
-            currentLayer = wholeDayLayer;
-            if (currentLayers.indexOf(wholeDayLayer) === -1) {
-                map.addLayer(wholeDayLayer);
-            }
+            // currentLayer = wholeDayLayer;
+            // if (currentLayers.indexOf(wholeDayLayer) === -1) {
+            //     map.addLayer(wholeDayLayer);
+            // }
             if (chartData) {
                 chart.setData(chartData.filter(d =>
                     d[1] >= timeRange[0] && d[1] <= timeRange[1]));
